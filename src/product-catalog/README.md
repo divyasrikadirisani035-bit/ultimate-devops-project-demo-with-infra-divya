@@ -46,3 +46,6 @@ Testing GitHub Actions Docker build and push workflow.
 ## Final CI Test
 
 Testing full CI pipeline: build, unit test, lint, Docker push, and Kubernetes manifest update.
+## CI Quality Test
+
+Testing build, unit test, code quality, Docker image push, and Kubernetes image update.
