@@ -40,3 +40,6 @@ To bump all dependencies run:
 go get -u -t ./...
 go mod tidy
 ```
+## CI Pipeline Test
+
+Testing GitHub Actions Docker build and push workflow.
