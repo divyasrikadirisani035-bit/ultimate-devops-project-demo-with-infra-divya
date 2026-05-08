@@ -43,3 +43,6 @@ go mod tidy
 ## CI Pipeline Test
 
 Testing GitHub Actions Docker build and push workflow.
+## Final CI Test
+
+Testing full CI pipeline: build, unit test, lint, Docker push, and Kubernetes manifest update.
