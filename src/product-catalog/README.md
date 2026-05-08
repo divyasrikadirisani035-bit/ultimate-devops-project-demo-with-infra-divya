@@ -40,3 +40,6 @@ To bump all dependencies run:
 go get -u -t ./...
 go mod tidy
 ```
+## CI/CD Practice
+
+This repository is used to practice GitHub Actions CI pipeline, Docker builds, Kubernetes manifests, and Terraform-based AWS EKS infrastructure.
