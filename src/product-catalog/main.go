@@ -176,6 +176,7 @@ func main() {
 
 type productCatalog struct {
 	pb.UnimplementedProductCatalogServiceServer
+	healthpb.UnimplementedHealthServer
 }
 
 func readProductFiles() ([]*pb.Product, error) {
@@ -232,7 +233,7 @@ func (p *productCatalog) Check(ctx context.Context, req *healthpb.HealthCheckReq
 }
 
 func (p *productCatalog) Watch(req *healthpb.HealthCheckRequest, ws healthpb.Health_WatchServer) error {
-	return status.Errorf(codes.Unimplemented, "health check via Watch not implemented")
+	return status.Error(codes.Unimplemented, "health check via Watch not implemented")
 }
 
 func (p *productCatalog) ListProducts(ctx context.Context, req *pb.Empty) (*pb.ListProductsResponse, error) {
@@ -255,7 +256,7 @@ func (p *productCatalog) GetProduct(ctx context.Context, req *pb.GetProductReque
 		msg := "Error: Product Catalog Fail Feature Flag Enabled"
 		span.SetStatus(otelcodes.Error, msg)
 		span.AddEvent(msg)
-		return nil, status.Errorf(codes.Internal, msg)
+		return nil, status.Error(codes.Internal, msg)
 	}
 
 	var found *pb.Product
@@ -270,7 +271,7 @@ func (p *productCatalog) GetProduct(ctx context.Context, req *pb.GetProductReque
 		msg := fmt.Sprintf("Product Not Found: %s", req.Id)
 		span.SetStatus(otelcodes.Error, msg)
 		span.AddEvent(msg)
-		return nil, status.Errorf(codes.NotFound, msg)
+		return nil, status.Error(codes.NotFound, msg)
 	}
 
 	msg := fmt.Sprintf("Product Found - ID: %s, Name: %s", req.Id, found.Name)
