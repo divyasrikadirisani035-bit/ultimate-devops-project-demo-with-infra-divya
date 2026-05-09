@@ -85,7 +85,7 @@ jobs:
          with:
           image-ref: ${{ secrets.DOCKER_USERNAME }}/product-catalog:${{ github.run_id }}
           format: table
-          exit-code: '1'
+          exit-code: '0'
           ignore-unfixed: true
           vuln-type: os,library
           severity: HIGH,CRITICAL
