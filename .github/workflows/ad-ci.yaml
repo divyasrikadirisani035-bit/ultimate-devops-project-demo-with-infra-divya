@@ -25,13 +25,7 @@ jobs:
         run: |
           cd src/ad
           chmod +x gradlew
-          ./gradlew build
-
-      - name: Run tests
-        run: |
-          cd src/ad
-          chmod +x gradlew
-          ./gradlew test
+          ./gradlew installDist --no-daemon --stacktrace
 
   code-quality:
     runs-on: ubuntu-latest
@@ -50,7 +44,7 @@ jobs:
         run: |
           cd src/ad
           chmod +x gradlew
-          ./gradlew check
+          ./gradlew check --no-daemon --stacktrace
 
   docker:
     runs-on: ubuntu-latest
