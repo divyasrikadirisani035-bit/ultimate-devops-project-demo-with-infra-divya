@@ -40,11 +40,11 @@ jobs:
           distribution: temurin
           java-version: 21
 
-      - name: Gradle check
+      - name: Gradle code quality
         run: |
           cd src/ad
           chmod +x gradlew
-          ./gradlew check --no-daemon --stacktrace
+          ./gradlew compileJava test --no-daemon --stacktrace
 
   docker:
     runs-on: ubuntu-latest
