@@ -1,0 +1,53 @@
+name: currency-ci
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "src/currency/**"
+      - "kubernetes/currency/**"
+      - ".github/workflows/currency-ci.yaml"
+      - ".github/workflows/reusable-docker-k8s.yaml"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Validate currency service files
+        run: |
+          test -f src/currency/Dockerfile
+          test -f src/currency/CMakeLists.txt
+
+  code-quality:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Validate CMake availability
+        run: |
+          cmake --version
+          cd src/currency
+          test -f CMakeLists.txt
+
+  docker-k8s:
+    needs: [build, code-quality]
+    uses: ./.github/workflows/reusable-docker-k8s.yaml
+    with:
+      service_name: currency
+      docker_context: .
+      dockerfile_path: src/currency/Dockerfile
+      k8s_manifest_path: kubernetes/currency/deploy.yaml
+      git_user_email: divyasrikadirisani035@gmail.com
+      git_user_name: divyasrikadirisani035-bit
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+      TOKEN: ${{ secrets.TOKEN }}
