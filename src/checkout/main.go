@@ -160,7 +160,9 @@ func main() {
 		log.Fatal(err)
 	}
 
-	openfeature.SetProvider(flagd.NewProvider())
+	if err := openfeature.SetProvider(flagd.NewProvider()); err != nil {
+	log.Fatalf("failed to set OpenFeature provider: %v", err)
+}
 	openfeature.AddHooks(otelhooks.NewTracesHook())
 
 	tracer = tp.Tracer("checkout")
@@ -549,7 +551,7 @@ func (cs *checkout) sendToPostProcessor(ctx context.Context, result *pb.OrderRes
 		for i := 0; i < ffValue; i++ {
 			go func(i int) {
 				cs.KafkaProducerClient.Input() <- &msg
-				_ = <-cs.KafkaProducerClient.Successes()
+				  <-cs.KafkaProducerClient.Successes()
 			}(i)
 		}
 		log.Infof("Done with #%d messages for overload simulation.", ffValue)
