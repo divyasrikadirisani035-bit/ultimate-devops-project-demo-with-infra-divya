@@ -1,0 +1,96 @@
+name: reusable-docker-k8s
+
+on:
+  workflow_call:
+    inputs:
+      service_name:
+        required: true
+        type: string
+      docker_context:
+        required: true
+        type: string
+      dockerfile_path:
+        required: true
+        type: string
+      k8s_manifest_path:
+        required: true
+        type: string
+      git_user_email:
+        required: true
+        type: string
+      git_user_name:
+        required: true
+        type: string
+
+    secrets:
+      DOCKER_USERNAME:
+        required: true
+      DOCKER_TOKEN:
+        required: true
+      TOKEN:
+        required: true
+
+jobs:
+  docker-k8s:
+    runs-on: ubuntu-latest
+
+    concurrency:
+      group: update-k8s-main
+      cancel-in-progress: false
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ inputs.docker_context }}
+          file: ${{ inputs.dockerfile_path }}
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/${{ inputs.service_name }}:${{ github.run_id }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Run Trivy image scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ secrets.DOCKER_USERNAME }}/${{ inputs.service_name }}:${{ github.run_id }}
+          format: table
+          exit-code: 1
+          severity: HIGH,CRITICAL
+
+      - name: Checkout main branch for Kubernetes update
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.TOKEN }}
+          ref: main
+
+      - name: Update Kubernetes image
+        run: |
+          echo "Before update:"
+          grep "image:" ${{ inputs.k8s_manifest_path }}
+
+          sed -i "s|image: .*|image: ${{ secrets.DOCKER_USERNAME }}/${{ inputs.service_name }}:${{ github.run_id }}|" ${{ inputs.k8s_manifest_path }}
+
+          echo "After update:"
+          grep "image:" ${{ inputs.k8s_manifest_path }}
+
+      - name: Commit and push Kubernetes manifest update
+        run: |
+          git config --global user.email "${{ inputs.git_user_email }}"
+          git config --global user.name "${{ inputs.git_user_name }}"
+          git fetch origin main
+          git rebase origin/main
+          git add ${{ inputs.k8s_manifest_path }}
+          git commit -m "[CI]: Update ${{ inputs.service_name }} image tag" || echo "No changes to commit"
+          git push origin main
