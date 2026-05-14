@@ -15,6 +15,10 @@ on:
       k8s_manifest_path:
         required: true
         type: string
+      build_args:
+        required: false
+        type: string
+        default: ""
       git_user_email:
         required: true
         type: string
@@ -58,6 +62,7 @@ jobs:
           file: ${{ inputs.dockerfile_path }}
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/${{ inputs.service_name }}:${{ github.run_id }}
+          build-args: ${{ inputs.build_args }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 

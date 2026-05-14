@@ -45,6 +45,8 @@ jobs:
       docker_context: .
       dockerfile_path: src/currency/Dockerfile
       k8s_manifest_path: kubernetes/currency/deploy.yaml
+      build_args: |
+        OPENTELEMETRY_CPP_VERSION=1.16.1
       git_user_email: divyasrikadirisani035@gmail.com
       git_user_name: divyasrikadirisani035-bit
     secrets:
