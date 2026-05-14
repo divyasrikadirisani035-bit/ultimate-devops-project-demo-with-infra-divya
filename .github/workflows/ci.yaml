@@ -3,12 +3,14 @@
 name: product-catalog-ci
 
 on: 
-    push:
-      branches:
-        - main
+    
     pull_request:
         branches:
         - main
+        paths:
+        - "src/product-catalog/**"
+        - "kubernetes/productcatalog/**"
+        - ".github/workflows/ci.yaml"
 
 jobs:
     build:
