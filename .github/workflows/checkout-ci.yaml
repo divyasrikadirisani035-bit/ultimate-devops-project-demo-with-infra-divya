@@ -4,7 +4,10 @@ on:
   pull_request:
     branches:
       - main
-
+    paths:
+      - "src/checkout/**"
+      - "kubernetes/checkout/**"
+      - ".github/workflows/checkout-ci.yaml"
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -86,6 +89,11 @@ jobs:
           token: ${{ secrets.TOKEN }}
           ref: main
 
+      - name: Sync latest main
+        run: |
+          git fetch origin main
+          git reset --hard origin/main
+
       - name: Update checkout image in Kubernetes manifest
         run: |
           sed -i "s|image: .*|image: ${{ secrets.DOCKER_USERNAME }}/checkout:${{ github.run_id }}|" kubernetes/checkout/deploy.yaml
@@ -94,7 +102,6 @@ jobs:
         run: |
           git config --global user.email "divyasrikadirisani035@gmail.com"
           git config --global user.name "divyasrikadirisani035-bit"
-          git pull origin main --rebase
           git add kubernetes/checkout/deploy.yaml
           git commit -m "[CI]: Update checkout image tag" || echo "No changes to commit"
           git push origin main
