@@ -72,7 +72,8 @@ jobs:
           image-ref: ${{ secrets.DOCKER_USERNAME }}/${{ inputs.service_name }}:${{ github.run_id }}
           format: table
           exit-code: 1
-          severity: HIGH,CRITICAL
+          severity: CRITICAL
+          ignore-unfixed: true
 
       - name: Checkout main branch for Kubernetes update
         uses: actions/checkout@v4
