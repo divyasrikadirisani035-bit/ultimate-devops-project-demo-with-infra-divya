@@ -80,6 +80,11 @@ jobs:
         with:
           token: ${{ secrets.TOKEN }}
           ref: main
+          
+      - name: Sync latest main
+        run: |
+          git fetch origin main
+          git reset --hard origin/main
 
       - name: Update Kubernetes image
         run: |
@@ -95,8 +100,6 @@ jobs:
         run: |
           git config --global user.email "${{ inputs.git_user_email }}"
           git config --global user.name "${{ inputs.git_user_name }}"
-          git fetch origin main
-          git rebase origin/main
           git add ${{ inputs.k8s_manifest_path }}
           git commit -m "[CI]: Update ${{ inputs.service_name }} image tag" || echo "No changes to commit"
           git push origin main
