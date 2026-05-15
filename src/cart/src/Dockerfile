@@ -30,7 +30,10 @@ RUN dotnet publish ./src/cart.csproj -r linux-musl-$TARGETARCH --no-restore -o /
 # -----------------------------------------------------------------------------
 
 # https://mcr.microsoft.com/v2/dotnet/runtime-deps/tags/list
-FROM mcr.microsoft.com/dotnet/runtime-deps:8.0-alpine3.20
+FROM mcr.microsoft.com/dotnet/runtime-deps:8.0-alpine3.21
+
+
+RUN apk update && apk upgrade --no-cache
 
 WORKDIR /usr/src/app/
 COPY --from=builder /cart/ ./
