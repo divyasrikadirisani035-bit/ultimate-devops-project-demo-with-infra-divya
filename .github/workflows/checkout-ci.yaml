@@ -4,7 +4,10 @@ on:
   pull_request:
     branches:
       - main
-
+    paths:
+      - "src/checkout/**"
+      - "kubernetes/checkout/**"
+      - ".github/workflows/checkout-ci.yaml"
 jobs:
   build:
     runs-on: ubuntu-latest
