@@ -70,6 +70,8 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           projectBaseDir: src/payment
+          args: >
+            -Dsonar.qualitygate.wait=true
 
   docker-k8s:
     needs: sonarqube
