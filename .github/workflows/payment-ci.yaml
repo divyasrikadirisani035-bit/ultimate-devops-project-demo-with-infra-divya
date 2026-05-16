@@ -55,8 +55,24 @@ jobs:
           npm ci
           npm audit --audit-level=high || true
 
-  docker-k8s:
+  sonarqube:
+    runs-on: ubuntu-latest
+
     needs: [build, code-quality]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run SonarQube scan
+        uses: SonarSource/sonarqube-scan-action@v5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          projectBaseDir: src/payment
+
+  docker-k8s:
+    needs: sonarqube
     uses: ./.github/workflows/reusable-docker-k8s.yaml
     with:
       service_name: payment
