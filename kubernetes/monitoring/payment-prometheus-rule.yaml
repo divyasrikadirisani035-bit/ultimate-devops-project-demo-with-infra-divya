@@ -1,0 +1,30 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: payment-service-alerts
+  namespace: monitoring
+  labels:
+    release: monitoring
+spec:
+  groups:
+    - name: payment.rules
+      rules:
+        - alert: PaymentServiceUnavailable
+          expr: kube_deployment_status_replicas_available{deployment="opentelemetry-demo-paymentservice",namespace="default"} < 1
+          for: 2m
+          labels:
+            severity: critical
+            service: payment
+          annotations:
+            summary: "Payment service is unavailable"
+            description: "Payment deployment has no available replicas for more than 2 minutes."
+
+        - alert: PaymentPodRestarting
+          expr: increase(kube_pod_container_status_restarts_total{namespace="default",pod=~"opentelemetry-demo-paymentservice.*"}[5m]) > 0
+          for: 1m
+          labels:
+            severity: warning
+            service: payment
+          annotations:
+            summary: "Payment pod is restarting"
+            description: "Payment service pod restarted within the last 5 minutes."
