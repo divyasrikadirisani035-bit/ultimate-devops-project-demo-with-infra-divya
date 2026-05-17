@@ -4,7 +4,8 @@
   "repository": "https://github.com/opentelemetry/opentelemetry-demo",
   "main": "index.js",
   "scripts": {
-    "start": "node --require ./opentelemetry.js index.js"
+    "start": "node --require ./opentelemetry.js index.js",
+    "test": "jest --coverage"
   },
   "author": "Jonathan Lui",
   "license": "ISC",
@@ -30,5 +31,8 @@
     "pino": "9.6.0",
     "simple-card-validator": "1.1.0",
     "uuid": "11.0.5"
+  },
+  "devDependencies": {
+    "jest": "^30.4.2"
   }
 }
